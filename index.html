@@ -224,12 +224,22 @@
       gap: 14px;
     }
 
+    .field-grid.disorient .field {
+      animation: panicPulse 0.45s infinite alternate;
+    }
+
     .field {
       position: relative;
       border: 4px dotted #000;
       padding: 12px;
       background: rgba(255, 255, 255, 0.63);
       overflow: hidden;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .field.is-scrambled {
+      transform: rotate(-2deg) translateX(10px);
+      filter: saturate(1.6);
     }
 
     .field label,
@@ -368,14 +378,38 @@
       padding-top: 72px;
     }
 
+    .field-blocker {
+      position: absolute;
+      width: 160px;
+      height: 44px;
+      border: 3px solid #000;
+      background: linear-gradient(90deg, rgba(255, 0, 0, 0.9), rgba(255, 230, 0, 0.95));
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      z-index: 15;
+      pointer-events: auto;
+      left: 18px;
+      top: 18px;
+      transform: rotate(-7deg);
+      box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.22);
+      user-select: none;
+    }
+
     .button-row button,
     .escape-button {
       width: auto;
-      min-width: 220px;
-      font-size: 1.1rem;
+      min-width: 320px;
+      min-height: 92px;
+      font-size: 1.6rem;
       font-weight: 900;
       text-transform: uppercase;
       cursor: pointer;
+      padding: 18px 24px;
     }
 
     .danger-submit {
@@ -390,9 +424,10 @@
     }
 
     .escape-button {
-      position: absolute;
+      position: fixed;
       top: 10px;
       left: 10px;
+      z-index: 85;
       transition: left 0.12s linear, top 0.12s linear;
     }
 
@@ -685,6 +720,7 @@
     <section class="layout">
       <form class="panel" id="chaosForm">
         <div class="field-grid">
+          <div class="field-blocker" id="fieldBlocker">Form Jammer</div>
           <div class="field">
             <label for="passwordInput">Insurance Password Before Name</label>
             <input id="passwordInput" name="password" type="password" autocomplete="off" placeholder="Enter secret medical nonsense">
@@ -893,9 +929,11 @@
       ];
       const backgrounds = ['#ffd000', '#ff8ac6', '#71ffea', '#ff7a00', '#9eff00', '#7d67ff', '#ffefef'];
       const doctorSelect = document.getElementById('doctorSelect');
+      const nameInput = document.getElementById('nameInput');
       const passwordInput = document.getElementById('passwordInput');
       const phoneInput = document.getElementById('phoneInput');
       const symptomsInput = document.getElementById('symptomsInput');
+      const captchaInput = document.getElementById('captchaInput');
       const captchaCode = document.getElementById('captchaCode');
       const agreementCheck = document.getElementById('agreementCheck');
       const tiltSlider = document.getElementById('tiltSlider');
@@ -917,6 +955,16 @@
       const runawayButtons = [document.getElementById('bookBtnA'), document.getElementById('bookBtnB')];
       const runawayZone = document.getElementById('runawayZone');
       const form = document.getElementById('chaosForm');
+      const fieldGrid = form.querySelector('.field-grid');
+      const blocker = document.getElementById('fieldBlocker');
+      const sabotagedFields = [nameInput, passwordInput, phoneInput, symptomsInput, captchaInput, doctorSelect, tiltSlider, teleportSlider, liarSlider];
+      const roamingButtons = runawayButtons.map((button, index) => ({
+        button,
+        x: 40 + index * 220,
+        y: window.innerHeight - 220 + index * 30,
+        dx: index === 0 ? 7.8 : -7.1,
+        dy: index === 0 ? -6.2 : -5.4
+      }));
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       let timerValue = 201;
       let titleIndex = 0;
@@ -924,6 +972,7 @@
       let alertIndex = 0;
       let bgIndex = 0;
       let allowDoctorChaos = true;
+      let fieldShuffleLock = false;
 
       function beep(freq) {
         if (audioContext.state === 'suspended') {
@@ -977,11 +1026,29 @@
       }
 
       function moveRunawayButton(button) {
-        const bounds = runawayZone.getBoundingClientRect();
-        const maxX = Math.max(20, bounds.width - button.offsetWidth - 20);
-        const maxY = Math.max(20, bounds.height - button.offsetHeight - 20);
+        const maxX = Math.max(20, window.innerWidth - button.offsetWidth - 20);
+        const maxY = Math.max(20, window.innerHeight - button.offsetHeight - 90);
         button.style.left = `${Math.random() * maxX}px`;
         button.style.top = `${Math.random() * maxY}px`;
+      }
+
+      function roamButtons() {
+        roamingButtons.forEach((state) => {
+          const maxX = Math.max(20, window.innerWidth - state.button.offsetWidth - 20);
+          const maxY = Math.max(20, window.innerHeight - state.button.offsetHeight - 90);
+          state.x += state.dx;
+          state.y += state.dy;
+          if (state.x <= 0 || state.x >= maxX) {
+            state.dx *= -1;
+            state.x = Math.min(Math.max(0, state.x), maxX);
+          }
+          if (state.y <= 0 || state.y >= maxY) {
+            state.dy *= -1;
+            state.y = Math.min(Math.max(0, state.y), maxY);
+          }
+          state.button.style.left = `${state.x}px`;
+          state.button.style.top = `${state.y}px`;
+        });
       }
 
       function showPopup(popup) {
@@ -990,6 +1057,62 @@
 
       function hidePopup(popup) {
         popup.classList.remove('active');
+      }
+
+      function scrambleText(value) {
+        return value.split('').sort(() => Math.random() - 0.5).join('');
+      }
+
+      function swapFieldValues() {
+        const nameValue = nameInput.value;
+        const captchaValue = captchaInput.value;
+        nameInput.value = captchaValue;
+        captchaInput.value = nameValue;
+      }
+
+      function shuffleFields() {
+        if (fieldShuffleLock) {
+          return;
+        }
+        fieldShuffleLock = true;
+        const fields = Array.from(fieldGrid.querySelectorAll('.field'));
+        const lastField = fields.pop();
+        fields.sort(() => Math.random() - 0.5).forEach((field) => {
+          field.classList.add('is-scrambled');
+          fieldGrid.appendChild(field);
+        });
+        if (lastField) {
+          fieldGrid.appendChild(lastField);
+        }
+        fieldGrid.classList.add('disorient');
+        setTimeout(() => {
+          fields.forEach((field) => field.classList.remove('is-scrambled'));
+          fieldGrid.classList.remove('disorient');
+          fieldShuffleLock = false;
+        }, 1200);
+      }
+
+      function moveBlocker() {
+        const bounds = form.getBoundingClientRect();
+        const blockerWidth = blocker.offsetWidth || 160;
+        const blockerHeight = blocker.offsetHeight || 44;
+        const maxX = Math.max(20, bounds.width - blockerWidth - 20);
+        const maxY = Math.max(20, bounds.height - blockerHeight - 20);
+        blocker.style.left = `${Math.random() * maxX}px`;
+        blocker.style.top = `${Math.random() * maxY}px`;
+        blocker.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
+      }
+
+      function repelField(event) {
+        const target = event.target;
+        if (!target.matches('input, textarea, select')) {
+          return;
+        }
+        setTimeout(() => {
+          target.blur();
+        }, 180);
+        moveBlocker();
+        shuffleFields();
       }
 
       for (let hour = 1; hour <= 100; hour += 1) {
@@ -1054,11 +1177,30 @@
           const reversed = raw.split('').reverse().join('');
           passwordInput.value = reversed;
         }
+        if (raw.length > 7) {
+          passwordInput.value = scrambleText(passwordInput.value);
+        }
+      });
+
+      nameInput.addEventListener('input', () => {
+        if (nameInput.value.length > 1) {
+          const unstable = nameInput.value.slice(0, -1).split('').reverse().join('') + nameInput.value.slice(-1);
+          nameInput.value = unstable;
+        }
+        if (Math.random() > 0.55) {
+          swapFieldValues();
+        }
       });
 
       phoneInput.addEventListener('input', () => {
         const lettersOnly = phoneInput.value.replace(/[0-9]/g, '').replace(/[^a-zA-Z\s()+-]/g, '');
-        phoneInput.value = lettersOnly;
+        phoneInput.value = lettersOnly.replace(/[aeiou]/gi, '');
+      });
+
+      captchaInput.addEventListener('input', () => {
+        if (captchaInput.value.length > 2) {
+          captchaInput.value = scrambleText(captchaInput.value.toUpperCase()).slice(0, 6);
+        }
       });
 
       doctorSelect.addEventListener('change', () => {
@@ -1070,6 +1212,7 @@
         const nextIndex = Math.floor(Math.random() * options.length);
         allowDoctorChaos = false;
         doctorSelect.selectedIndex = nextIndex;
+        shuffleFields();
       });
 
       setInterval(() => {
@@ -1085,6 +1228,18 @@
             agreementCheck.checked = false;
           }, 3000);
         }
+      });
+
+      sabotagedFields.forEach((field) => {
+        field.addEventListener('focus', repelField);
+        field.addEventListener('pointerdown', moveBlocker);
+      });
+
+      blocker.addEventListener('mouseenter', moveBlocker);
+      blocker.addEventListener('click', () => {
+        alertMessage.textContent = 'You almost reached the form. Security noticed.';
+        showPopup(alertPopup);
+        moveBlocker();
       });
 
       tiltSlider.addEventListener('input', updateTilt);
@@ -1103,9 +1258,17 @@
         button.addEventListener('click', () => moveRunawayButton(button));
       });
 
+      window.addEventListener('resize', () => {
+        roamingButtons.forEach(({ button }) => moveRunawayButton(button));
+      });
+
       form.addEventListener('submit', (event) => {
         event.preventDefault();
-        alertMessage.textContent = 'Appointment canceled successfully. Maybe.';
+        form.reset();
+        randomCaptcha();
+        moveBlocker();
+        shuffleFields();
+        alertMessage.textContent = 'Form rejected for being suspiciously complete.';
         showPopup(alertPopup);
       });
 
@@ -1155,6 +1318,25 @@
         showPopup(cookiePopup);
       }, 9000);
 
+      setInterval(roamButtons, 16);
+
+      setInterval(() => {
+        moveBlocker();
+      }, 1400);
+
+      setInterval(() => {
+        if (document.activeElement && form.contains(document.activeElement) && Math.random() > 0.35) {
+          document.activeElement.blur();
+          shuffleFields();
+        }
+      }, 1700);
+
+      setInterval(() => {
+        if (Math.random() > 0.45) {
+          swapFieldValues();
+        }
+      }, 2400);
+
       setTimeout(() => {
         hidePopup(visitorPopup);
       }, 6500);
@@ -1162,6 +1344,8 @@
       setInterval(randomCaptcha, 2000);
       setInterval(randomColor, 2000);
       randomCaptcha();
+      moveBlocker();
+      roamingButtons.forEach(({ button }) => moveRunawayButton(button));
     })();
   </script>
 </body>
