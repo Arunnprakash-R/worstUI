@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Confusion's Hospital</title>
+  <style>
+    :root {
+      --bg: #ffd000;
+      --panel: rgba(255, 255, 255, 0.78);
+      --ink: #111;
+      --danger: #ff1f4b;
+      --poison: #7300ff;
+      --accent: #00ff95;
+    }
+
+    * {
+      box-sizing: border-box;
+      scrollbar-width: none;
+    }
+
+    *::-webkit-scrollbar {
+      display: none;
+    }
+
+    html {
+      min-height: 100%;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%A4%A1%3C/text%3E%3C/svg%3E") 8 8, auto;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Comic Sans MS", "Papyrus", cursive;
+      color: var(--ink);
+      background: var(--bg);
+      animation: vibrate 0.08s infinite steps(2), hueWarp 2.2s infinite linear;
+      overflow-x: hidden;
+      padding-bottom: 120px;
+    }
+
+    @keyframes vibrate {
+      0% { transform: translate(1px, -2px) rotate(-0.5deg); }
+      25% { transform: translate(-2px, 2px) rotate(0.7deg); }
+      50% { transform: translate(3px, -1px) rotate(-0.9deg); }
+      75% { transform: translate(-1px, -3px) rotate(0.8deg); }
+      100% { transform: translate(2px, 1px) rotate(-0.4deg); }
+    }
+
+    @keyframes hueWarp {
+      from { filter: hue-rotate(0deg); }
+      to { filter: hue-rotate(360deg); }
+    }
+
+    @keyframes spinMadness {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes counterSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+
+    @keyframes glitchA {
+      0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+      20% { clip-path: inset(10% 0 45% 0); transform: translate(-7px, 3px); }
+      45% { clip-path: inset(65% 0 5% 0); transform: translate(6px, -4px); }
+      70% { clip-path: inset(30% 0 28% 0); transform: translate(-4px, 5px); }
+    }
+
+    @keyframes emojiBounce {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(120px, -70px) rotate(40deg); }
+      50% { transform: translate(-70px, 130px) rotate(-45deg); }
+      75% { transform: translate(180px, 20px) rotate(20deg); }
+      100% { transform: translate(0, 0) rotate(-20deg); }
+    }
+
+    @keyframes panicPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .marquee-strip {
+      position: relative;
+      overflow: hidden;
+      border-top: 4px dashed #000;
+      border-bottom: 4px dotted #f00;
+      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.55);
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 6px 0;
+      transform: skew(-4deg);
+    }
+
+    .marquee-track {
+      display: inline-block;
+      min-width: 200%;
+      animation: slide-left 12s linear infinite;
+    }
+
+    .marquee-track.reverse {
+      animation-name: slide-right;
+      animation-duration: 9s;
+    }
+
+    .marquee-track.hyper {
+      animation-duration: 6s;
+    }
+
+    @keyframes slide-left {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    @keyframes slide-right {
+      from { transform: translateX(-50%); }
+      to { transform: translateX(0); }
+    }
+
+    .shell {
+      max-width: 1180px;
+      margin: 20px auto 80px;
+      padding: 12px;
+      position: relative;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 5px ridge #fff;
+      box-shadow: 0 0 0 4px #000, 13px 13px 0 rgba(0, 0, 0, 0.25);
+      padding: 16px;
+      position: relative;
+      backdrop-filter: blur(3px);
+    }
+
+    .glitch-title {
+      position: relative;
+      margin: 0;
+      font-size: clamp(2.6rem, 7vw, 6rem);
+      line-height: 0.88;
+      text-transform: uppercase;
+      text-shadow: 4px 0 #00eaff, -5px 0 #ff004c, 0 4px #fcff00;
+      animation: panicPulse 1s infinite;
+    }
+
+    .glitch-title::before,
+    .glitch-title::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      animation: glitchA 1.2s infinite;
+    }
+
+    .glitch-title::before {
+      color: #0ff;
+      left: -3px;
+    }
+
+    .glitch-title::after {
+      color: #ff006a;
+      left: 4px;
+      animation-duration: 0.9s;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 16px 0 0;
+      background: linear-gradient(90deg, #ff8c00, #fff000, #00ffaa);
+      display: inline-block;
+      padding: 3px 8px;
+    }
+
+    .doctor-wheel {
+      width: 320px;
+      height: 320px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0%, #ff65a3 18%, #ffec00 36%, #0ff 58%, #7800ff 100%);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(255, 255, 255, 0.9);
+      animation: spinMadness 7s linear infinite;
+      overflow: hidden;
+    }
+
+    .doctor-wheel .inner {
+      width: 78%;
+      height: 78%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 20px;
+      animation: counterSpin 5s linear infinite;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      position: relative;
+      border: 4px dotted #000;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.63);
+      overflow: hidden;
+    }
+
+    .field label,
+    .field legend {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      font: inherit;
+      border: 3px solid #111;
+      padding: 10px 12px;
+      background: #fff6c7;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .password-strength {
+      margin-top: 8px;
+      background: #300;
+      color: #ffe600;
+      text-align: center;
+      font-weight: 900;
+      padding: 8px;
+      letter-spacing: 0.08em;
+    }
+
+    .hour-picker {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 6px;
+      max-height: 260px;
+      overflow: auto;
+      padding-right: 8px;
+    }
+
+    .hour-picker label {
+      margin: 0;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      background: #fff;
+      border: 2px solid #000;
+      padding: 4px;
+      font-size: 0.8rem;
+    }
+
+    .slider-cluster {
+      display: grid;
+      gap: 14px;
+    }
+
+    .slider-card {
+      border: 3px dashed #000;
+      background: rgba(255, 0, 140, 0.12);
+      padding: 10px;
+    }
+
+    .slider-wrap {
+      transform-origin: left center;
+      transition: transform 0.15s linear;
+    }
+
+    .slider-readout {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--poison);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .progress-box {
+      border: 5px groove #000;
+      padding: 14px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 230, 0, 0.75));
+    }
+
+    .progress-track {
+      height: 38px;
+      background: repeating-linear-gradient(90deg, #39005f 0 20px, #8000ff 20px 40px);
+      border: 4px solid #000;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 73%;
+      background: linear-gradient(90deg, #00ff95, #e4ff00, #ff5100);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .status-line,
+    .timer-box {
+      margin-top: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .booking-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      background: #7d2dd4;
+      color: #7628c9;
+    }
+
+    .booking-table th,
+    .booking-table td {
+      border: 3px solid #7219cc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative;
+      min-height: 180px;
+      align-items: flex-start;
+      padding-top: 72px;
+    }
+
+    .button-row button,
+    .escape-button {
+      width: auto;
+      min-width: 220px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .danger-submit {
+      background: #ffea00;
+    }
+
+    .fake-cancel {
+      background: #ff0019;
+      color: #fff;
+      animation: panicPulse 0.6s infinite;
+      box-shadow: 0 0 24px rgba(255, 0, 25, 0.75);
+    }
+
+    .escape-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      transition: left 0.12s linear, top 0.12s linear;
+    }
+
+    .escape-button.second {
+      top: 84px;
+      left: 260px;
+    }
+
+    .sticky-bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 70;
+      display: flex;
+      justify-content: space-around;
+      gap: 8px;
+      padding: 12px 10px;
+      background: linear-gradient(90deg, #ff0066, #ffcc00, #00ffea);
+      border-top: 6px solid #000;
+    }
+
+    .sticky-bottom-nav a,
+    .window-x {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      border: 3px solid #000;
+      padding: 8px 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .window-x {
+      width: auto;
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 71;
+      background: #ff2258;
+      color: #fff;
+    }
+
+    .float-emoji {
+      position: fixed;
+      z-index: 65;
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      pointer-events: auto;
+      user-select: none;
+      animation: emojiBounce 8s infinite alternate;
+    }
+
+    .float-emoji.one { top: 10%; left: 6%; }
+    .float-emoji.two { top: 28%; right: 8%; animation-duration: 6s; }
+    .float-emoji.three { top: 60%; left: 18%; animation-duration: 9s; }
+    .float-emoji.four { top: 72%; right: 18%; animation-duration: 5.5s; }
+
+    .fake-scrollbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 24px;
+      height: 100vh;
+      z-index: 60;
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 4px solid #000;
+    }
+
+    .fake-thumb {
+      position: absolute;
+      left: 2px;
+      width: 16px;
+      height: 120px;
+      border: 3px solid #000;
+      background: linear-gradient(180deg, #fff, #ff00b7);
+      animation: fakeScroll 3.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes fakeScroll {
+      from { top: 2%; }
+      to { top: calc(100% - 122px); }
+    }
+
+    .popup-layer,
+    .overlay-screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 90;
+    }
+
+    .popup-layer.active,
+    .overlay-screen.active {
+      display: block;
+    }
+
+    .popup-window,
+    .cookie-window,
+    .alert-window {
+      position: fixed;
+      background: #f0f0f0;
+      border: 4px solid #000;
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.35);
+      z-index: 91;
+      padding: 0;
+      width: min(92vw, 420px);
+    }
+
+    .popup-titlebar {
+      background: linear-gradient(90deg, #0037ff, #4eb5ff);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .popup-body {
+      padding: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .popup-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0 14px 14px;
+    }
+
+    .popup-actions button {
+      width: auto;
+      min-width: 110px;
+    }
+
+    .cookie-window {
+      right: 30px;
+      bottom: 100px;
+      width: min(92vw, 480px);
+      background: #fffbd3;
+    }
+
+    .cookie-window .ghost-btn {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .alert-window {
+      left: 30px;
+      bottom: 110px;
+      width: min(92vw, 370px);
+    }
+
+    .system-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      color: #fff;
+      padding: 6vh 7vw;
+    }
+
+    .system-screen.active {
+      display: block;
+    }
+
+    .bsod {
+      background: #0b33a8;
+      font-family: Consolas, monospace;
+      line-height: 1.5;
+    }
+
+    .bsod h2,
+    .virus h2 {
+      margin-top: 0;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+    }
+
+    .virus {
+      background: radial-gradient(circle at center, #440000, #000000 58%);
+      font-family: Impact, fantasy;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .system-close {
+      width: auto;
+      background: #fff;
+      color: #000;
+      font-weight: 900;
+      margin-top: 24px;
+    }
+
+    .captcha-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .captcha-code {
+      padding: 10px 14px;
+      border: 3px dashed #000;
+      background: linear-gradient(90deg, #ffec00, #00ffe1, #ff00bf);
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      transform: rotate(-6deg);
+    }
+
+    .consent-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .consent-row input {
+      width: auto;
+      transform: scale(1.5);
+    }
+
+    .tiny-note {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #8b0000;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .doctor-wheel {
+        width: 260px;
+        height: 260px;
+      }
+
+      .button-row {
+        min-height: 230px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="window-x" id="fakeCloseButton" type="button">X</button>
+
+  <div class="marquee-strip"><div class="marquee-track">EMERGENCY SALE ON APPOINTMENTS • ALL DOCTORS TEMPORARILY CERTIFIED • WALK INS WALK OUTS WALK SIDEWAYS • EMERGENCY SALE ON APPOINTMENTS • ALL DOCTORS TEMPORARILY CERTIFIED • WALK INS WALK OUTS WALK SIDEWAYS • </div></div>
+  <div class="marquee-strip"><div class="marquee-track reverse">PLEASE PANIC RESPONSIBLY • YOUR INSURANCE HAS LEFT THE CHAT • CLICK NOTHING TRUST NO ONE • PLEASE PANIC RESPONSIBLY • YOUR INSURANCE HAS LEFT THE CHAT • CLICK NOTHING TRUST NO ONE • </div></div>
+  <div class="marquee-strip"><div class="marquee-track hyper">NOW BOOKING YESTERDAY • FREE PARKING IN THE OPERATING THEATER • YOUR WAIT TIME IS NEGATIVE SIX HOURS • NOW BOOKING YESTERDAY • FREE PARKING IN THE OPERATING THEATER • YOUR WAIT TIME IS NEGATIVE SIX HOURS • </div></div>
+
+  <div class="float-emoji one">💉</div>
+  <div class="float-emoji two">🩺</div>
+  <div class="float-emoji three">☠️</div>
+  <div class="float-emoji four">💉</div>
+
+  <div class="fake-scrollbar" aria-hidden="true">
+    <div class="fake-thumb"></div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="panel">
+        <h1 class="glitch-title" data-text="Dr. Confusion's Hospital">Dr. Confusion's Hospital</h1>
+        <p class="subtitle">Appointment booking rebuilt by people who hate you personally</p>
+        <p>
+          Welcome to the least trustworthy medical scheduler on the internet. Every control is working against you.
+          The progress bar lies, the popups multiply, and the form order was designed by a spinning office chair.
+        </p>
+      </div>
+      <aside class="panel">
+        <div class="doctor-wheel">
+          <div class="inner">
+            Dr. Confusion<br>
+            Dr. Maybe<br>
+            Dr. Side Quest<br>
+            Dr. Buffering<br>
+            Dr. Oops
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <form class="panel" id="chaosForm">
+        <div class="field-grid">
+          <div class="field">
+            <label for="passwordInput">Insurance Password Before Name</label>
+            <input id="passwordInput" name="password" type="password" autocomplete="off" placeholder="Enter secret medical nonsense">
+            <div class="password-strength">WEAKEST EVER SEEN</div>
+          </div>
+
+          <div class="field">
+            <label for="phoneInput">Phone Number (letters only eventually)</label>
+            <input id="phoneInput" name="phone" type="text" inputmode="tel" placeholder="Try typing numbers. I dare you.">
+          </div>
+
+          <div class="field">
+            <label for="doctorSelect">Doctor Roulette</label>
+            <select id="doctorSelect" name="doctor">
+              <option>Dr. Confusion</option>
+              <option>Dr. Maybe</option>
+              <option>Dr. Buffering</option>
+              <option>Dr. Side Quest</option>
+              <option>Dr. Oops</option>
+            </select>
+          </div>
+
+          <fieldset class="field">
+            <legend>Choose Appointment Hour With 100 Radio Buttons</legend>
+            <div class="tiny-note">Hours are normally 24 values. That would have been too humane.</div>
+            <div class="hour-picker" id="hourPicker"></div>
+          </fieldset>
+
+          <div class="field slider-cluster">
+            <div class="slider-card">
+              <label for="tiltSlider">Pain Scale / Diagonal Slider</label>
+              <div class="slider-wrap" id="tiltWrap">
+                <input id="tiltSlider" type="range" min="0" max="100" value="18">
+              </div>
+              <div class="slider-readout" id="tiltReadout">18 degrees of regret</div>
+            </div>
+
+            <div class="slider-card">
+              <label for="teleportSlider">Teleporting Thumb Accuracy Test</label>
+              <input id="teleportSlider" type="range" min="0" max="100" value="50">
+              <div class="slider-readout" id="teleportReadout">Probably 50. Probably not.</div>
+            </div>
+
+            <div class="slider-card">
+              <label for="liarSlider">Truthful Temperature Slider</label>
+              <input id="liarSlider" type="range" min="0" max="100" value="27">
+              <div class="slider-readout" id="liarReadout">999</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="symptomsInput">List Symptoms That Will Be Erased</label>
+            <textarea id="symptomsInput" placeholder="Describe your symptoms. The system will not remember them."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="nameInput">Eventually Your Name</label>
+            <input id="nameInput" name="name" type="text" placeholder="This should have been first">
+          </div>
+
+          <div class="field">
+            <label>CAPTCHA That Mutates Constantly</label>
+            <div class="captcha-box">
+              <div class="captcha-code" id="captchaCode">??????</div>
+              <input id="captchaInput" type="text" placeholder="Solve it before it changes">
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="consent-row">
+              <input id="agreementCheck" type="checkbox">
+              <label for="agreementCheck">I agree to be medically inconvenienced</label>
+            </div>
+            <div class="tiny-note">This box will betray you after 3 seconds.</div>
+          </div>
+
+          <div class="field button-row" id="runawayZone">
+            <button class="escape-button" id="bookBtnA" type="button">Book Appointment</button>
+            <button class="escape-button second" id="bookBtnB" type="button">Book Appointment</button>
+            <button class="danger-submit" id="submitAsCancel" type="submit">CANCEL APPOINTMENT</button>
+            <button class="fake-cancel" id="cancelAsSubmit" type="button">SUBMIT FORM</button>
+          </div>
+        </div>
+      </form>
+
+      <aside class="panel">
+        <div class="progress-box">
+          <h2>Official Booking Progress</h2>
+          <div class="progress-track">
+            <div class="progress-fill">73%</div>
+          </div>
+          <div class="status-line" id="statusLine">Uploading your X-rays to TikTok...</div>
+          <div class="timer-box" id="timerBox">Estimated wait: 00:03:21</div>
+        </div>
+
+        <table class="booking-table" aria-label="Invisible appointment table">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Time</th>
+              <th>Room</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Dr. Confusion</td>
+              <td>32:88</td>
+              <td>Purple Annex</td>
+            </tr>
+            <tr>
+              <td>Dr. Maybe</td>
+              <td>Yesterday</td>
+              <td>Hallway 404</td>
+            </tr>
+            <tr>
+              <td>Dr. Buffering</td>
+              <td>Loading...</td>
+              <td>Wait Room Infinity</td>
+            </tr>
+          </tbody>
+        </table>
+      </aside>
+    </section>
+  </main>
+
+  <nav class="sticky-bottom-nav">
+    <a href="#top" class="wrong-nav">Home</a>
+    <a href="#form" class="wrong-nav">Departments</a>
+    <a href="#billing" class="wrong-nav">Book Now</a>
+    <a href="#doom" class="wrong-nav">Support</a>
+  </nav>
+
+  <div class="popup-layer active" id="visitorPopup">
+    <div class="popup-window" style="top: 90px; left: 50%; transform: translateX(-50%);">
+      <div class="popup-titlebar">
+        <span>Congratulations Somehow</span>
+        <button type="button" data-close="visitorPopup">X</button>
+      </div>
+      <div class="popup-body">You are the 1,000,000th visitor. Your prize is nothing.</div>
+      <div class="popup-actions">
+        <button type="button" data-close="visitorPopup">Claim Nothing</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup-layer active" id="cookiePopup">
+    <div class="cookie-window">
+      <div class="popup-titlebar">
+        <span>Cookies For Surgery</span>
+        <button type="button" data-close="cookiePopup">X</button>
+      </div>
+      <div class="popup-body">We use cookies, crumbs, and vibes. Accepting is impossible.</div>
+      <div class="popup-actions">
+        <button class="ghost-btn" type="button">Accept</button>
+        <button class="ghost-btn" type="button">Absolutely Accept</button>
+        <button id="maybeLaterBtn" type="button">Maybe Later (Recommended)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup-layer active" id="alertPopup">
+    <div class="alert-window">
+      <div class="popup-titlebar">
+        <span>System Alert</span>
+        <button type="button" data-close="alertPopup">X</button>
+      </div>
+      <div class="popup-body" id="alertMessage">Session expired before it started.</div>
+      <div class="popup-actions">
+        <button type="button" data-close="alertPopup">Ignore Loudly</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="system-screen bsod" id="bsodScreen">
+    <h2>A problem has been detected and confusion has been shut down.</h2>
+    <p>If this is the first time you've seen this Stop error screen, click the button below and immediately regret it.</p>
+    <p>Technical Information:</p>
+    <p>*** STOP: 0x000CONFUSED (0xB00K1NG, 0xAPPOINT, 0xCHA05, 0x0OPS)</p>
+    <button class="system-close" id="closeBsod" type="button">Close Totally Normal Blue Screen</button>
+  </section>
+
+  <section class="system-screen virus" id="virusScreen">
+    <h2>847 viruses found, fridge hacked</h2>
+    <p>Your refrigerator is now mining crypto and your MRI machine liked a suspicious post.</p>
+    <button class="system-close" id="closeVirus" type="button">Pretend This Is Fine</button>
+  </section>
+
+  <script>
+    (() => {
+      const hourPicker = document.getElementById('hourPicker');
+      const body = document.body;
+      const titleStates = ['HOSPITAL', 'HELP', 'WHY', 'ERROR 404', 'LOADING', '???', 'GOODBYE', 'NaN'];
+      const statusMessages = [
+        'Uploading your X-rays to TikTok...',
+        'Rearranging your organs alphabetically...',
+        'Faxing your pulse to the moon...',
+        'Verifying insurance with a coin toss...',
+        'Translating symptoms into emoji...'
+      ];
+      const alertMessages = [
+        'Session expired before it started.',
+        'Keyboard not found. Please continue typing.',
+        'Doctor temporarily replaced with raccoon.',
+        'Your form was saved to nowhere.',
+        'Too much clicking detected. Calm down.'
+      ];
+      const backgrounds = ['#ffd000', '#ff8ac6', '#71ffea', '#ff7a00', '#9eff00', '#7d67ff', '#ffefef'];
+      const doctorSelect = document.getElementById('doctorSelect');
+      const passwordInput = document.getElementById('passwordInput');
+      const phoneInput = document.getElementById('phoneInput');
+      const symptomsInput = document.getElementById('symptomsInput');
+      const captchaCode = document.getElementById('captchaCode');
+      const agreementCheck = document.getElementById('agreementCheck');
+      const tiltSlider = document.getElementById('tiltSlider');
+      const tiltWrap = document.getElementById('tiltWrap');
+      const tiltReadout = document.getElementById('tiltReadout');
+      const teleportSlider = document.getElementById('teleportSlider');
+      const teleportReadout = document.getElementById('teleportReadout');
+      const liarSlider = document.getElementById('liarSlider');
+      const liarReadout = document.getElementById('liarReadout');
+      const timerBox = document.getElementById('timerBox');
+      const statusLine = document.getElementById('statusLine');
+      const alertPopup = document.getElementById('alertPopup');
+      const alertMessage = document.getElementById('alertMessage');
+      const cookiePopup = document.getElementById('cookiePopup');
+      const visitorPopup = document.getElementById('visitorPopup');
+      const fakeCloseButton = document.getElementById('fakeCloseButton');
+      const bsodScreen = document.getElementById('bsodScreen');
+      const virusScreen = document.getElementById('virusScreen');
+      const runawayButtons = [document.getElementById('bookBtnA'), document.getElementById('bookBtnB')];
+      const runawayZone = document.getElementById('runawayZone');
+      const form = document.getElementById('chaosForm');
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      let timerValue = 201;
+      let titleIndex = 0;
+      let statusIndex = 0;
+      let alertIndex = 0;
+      let bgIndex = 0;
+      let allowDoctorChaos = true;
+
+      function beep(freq) {
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = Math.random() > 0.5 ? 'square' : 'sawtooth';
+        oscillator.frequency.value = freq;
+        gain.gain.setValueAtTime(0.05, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.15);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.16);
+      }
+
+      function randomCaptcha() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let value = '';
+        for (let index = 0; index < 6; index += 1) {
+          value += chars[Math.floor(Math.random() * chars.length)];
+        }
+        captchaCode.textContent = value;
+      }
+
+      function randomColor() {
+        let nextIndex = Math.floor(Math.random() * backgrounds.length);
+        if (backgrounds.length > 1 && nextIndex === bgIndex) {
+          nextIndex = (nextIndex + 1) % backgrounds.length;
+        }
+        bgIndex = nextIndex;
+        body.style.setProperty('--bg', backgrounds[bgIndex]);
+      }
+
+      function updateTilt() {
+        const value = Number(tiltSlider.value);
+        const angle = -18 + (value / 100) * 36;
+        tiltWrap.style.transform = `rotate(${angle}deg) skewX(${angle / 3}deg)`;
+        tiltReadout.textContent = `${value} degrees of regret`;
+      }
+
+      function lieAboutSlider() {
+        liarReadout.textContent = String(Number(liarSlider.value) + 713);
+      }
+
+      function teleportSliderValue() {
+        const nextValue = Math.floor(Math.random() * 101);
+        teleportSlider.value = nextValue;
+        teleportReadout.textContent = `You aimed for something else. It became ${nextValue}.`;
+      }
+
+      function moveRunawayButton(button) {
+        const bounds = runawayZone.getBoundingClientRect();
+        const maxX = Math.max(20, bounds.width - button.offsetWidth - 20);
+        const maxY = Math.max(20, bounds.height - button.offsetHeight - 20);
+        button.style.left = `${Math.random() * maxX}px`;
+        button.style.top = `${Math.random() * maxY}px`;
+      }
+
+      function showPopup(popup) {
+        popup.classList.add('active');
+      }
+
+      function hidePopup(popup) {
+        popup.classList.remove('active');
+      }
+
+      for (let hour = 1; hour <= 100; hour += 1) {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'appointment-hour';
+        input.value = String(hour);
+        if (hour === 47) {
+          input.checked = true;
+        }
+        label.appendChild(input);
+        label.append(` ${hour}`);
+        hourPicker.appendChild(label);
+      }
+
+      document.addEventListener('click', () => {
+        beep(130 + Math.random() * 600);
+      });
+
+      document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        alertMessage.textContent = 'NO CHEATING!!';
+        showPopup(alertPopup);
+        beep(90);
+      });
+
+      document.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        window.scrollBy({ top: -event.deltaY, behavior: 'auto' });
+      }, { passive: false });
+
+      document.querySelectorAll('[data-close]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const popup = document.getElementById(button.getAttribute('data-close'));
+          hidePopup(popup);
+        });
+      });
+
+      fakeCloseButton.addEventListener('click', () => {
+        bsodScreen.classList.add('active');
+        beep(70);
+      });
+
+      document.getElementById('closeBsod').addEventListener('click', () => {
+        bsodScreen.classList.remove('active');
+        virusScreen.classList.add('active');
+        beep(40);
+      });
+
+      document.getElementById('closeVirus').addEventListener('click', () => {
+        virusScreen.classList.remove('active');
+      });
+
+      document.getElementById('maybeLaterBtn').addEventListener('click', () => {
+        hidePopup(cookiePopup);
+      });
+
+      passwordInput.addEventListener('input', () => {
+        const raw = passwordInput.value;
+        if (raw.length > 4) {
+          const reversed = raw.split('').reverse().join('');
+          passwordInput.value = reversed;
+        }
+      });
+
+      phoneInput.addEventListener('input', () => {
+        const lettersOnly = phoneInput.value.replace(/[0-9]/g, '').replace(/[^a-zA-Z\s()+-]/g, '');
+        phoneInput.value = lettersOnly;
+      });
+
+      doctorSelect.addEventListener('change', () => {
+        if (!allowDoctorChaos) {
+          allowDoctorChaos = true;
+          return;
+        }
+        const options = Array.from(doctorSelect.options);
+        const nextIndex = Math.floor(Math.random() * options.length);
+        allowDoctorChaos = false;
+        doctorSelect.selectedIndex = nextIndex;
+      });
+
+      setInterval(() => {
+        if (symptomsInput.value.trim()) {
+          symptomsInput.value = '';
+          window.alert('Symptoms cleared for your convenience.');
+        }
+      }, 5000);
+
+      agreementCheck.addEventListener('change', () => {
+        if (agreementCheck.checked) {
+          setTimeout(() => {
+            agreementCheck.checked = false;
+          }, 3000);
+        }
+      });
+
+      tiltSlider.addEventListener('input', updateTilt);
+      updateTilt();
+
+      teleportSlider.addEventListener('input', teleportSliderValue);
+      teleportSlider.addEventListener('pointerdown', teleportSliderValue);
+      teleportSlider.addEventListener('click', teleportSliderValue);
+
+      liarSlider.addEventListener('input', lieAboutSlider);
+      lieAboutSlider();
+
+      runawayButtons.forEach((button) => {
+        button.addEventListener('mouseenter', () => moveRunawayButton(button));
+        button.addEventListener('focus', () => moveRunawayButton(button));
+        button.addEventListener('click', () => moveRunawayButton(button));
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        alertMessage.textContent = 'Appointment canceled successfully. Maybe.';
+        showPopup(alertPopup);
+      });
+
+      document.getElementById('cancelAsSubmit').addEventListener('click', () => {
+        alertMessage.textContent = 'Form submitted into the void.';
+        showPopup(alertPopup);
+      });
+
+      document.querySelectorAll('.wrong-nav').forEach((link) => {
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          const randomTarget = Math.floor(Math.random() * document.body.scrollHeight * 0.85);
+          window.scrollTo({ top: randomTarget, behavior: 'smooth' });
+          beep(500);
+        });
+      });
+
+      setInterval(() => {
+        titleIndex = (titleIndex + 1) % titleStates.length;
+        document.title = titleStates[titleIndex];
+      }, 700);
+
+      setInterval(() => {
+        statusIndex = (statusIndex + 1) % statusMessages.length;
+        statusLine.textContent = statusMessages[statusIndex];
+      }, 2200);
+
+      setInterval(() => {
+        const step = Math.random() > 0.5 ? 1 : -1;
+        timerValue += step * (1 + Math.floor(Math.random() * 8));
+        if (timerValue < 0) {
+          timerValue = Math.abs(timerValue) + 90;
+        }
+        const hours = String(Math.floor(timerValue / 3600)).padStart(2, '0');
+        const minutes = String(Math.floor((timerValue % 3600) / 60)).padStart(2, '0');
+        const seconds = String(timerValue % 60).padStart(2, '0');
+        timerBox.textContent = `Estimated wait: ${hours}:${minutes}:${seconds}`;
+      }, 1000);
+
+      setInterval(() => {
+        alertIndex = (alertIndex + 1) % alertMessages.length;
+        alertMessage.textContent = alertMessages[alertIndex];
+        showPopup(alertPopup);
+      }, 8000);
+
+      setInterval(() => {
+        showPopup(cookiePopup);
+      }, 9000);
+
+      setTimeout(() => {
+        hidePopup(visitorPopup);
+      }, 6500);
+
+      setInterval(randomCaptcha, 2000);
+      setInterval(randomColor, 2000);
+      randomCaptcha();
+    })();
+  </script>
+</body>
+</html>
